@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from .forms import ExpenseSearchForm
 from .models import Expense, Category
 from .reports import summary_per_category
-from django.db.models import F
+from django.db.models import F, Sum
 
 class ExpenseListView(ListView):
     model = Expense
@@ -40,11 +40,13 @@ class ExpenseListView(ListView):
         elif sort_by == 'date':
             queryset = queryset.order_by(F('date').desc() if order == 'desc' else F('date').asc())
 
+        total_spent = queryset.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
 
         return super().get_context_data(
             form=form,
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
+            total_spent=total_spent,
             **kwargs)
 
 class CategoryListView(ListView):
