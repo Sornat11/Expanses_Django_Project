@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from .forms import ExpenseSearchForm
 from .models import Expense, Category
 from .reports import summary_per_category
-
+from django.db.models import F
 
 class ExpenseListView(ListView):
     model = Expense
@@ -27,9 +27,19 @@ class ExpenseListView(ListView):
 
             if date_to:
                 queryset = queryset.filter(date__lte=date_to)
-                
+
             if categories:
                 queryset = queryset.filter(category__in=categories)
+        
+        # Sorting logic
+        sort_by = self.request.GET.get('sort_by', 'date')  # Default sort by 'date'
+        order = self.request.GET.get('order', 'asc')  # Default order 'asc'
+
+        if sort_by == 'category':
+            queryset = queryset.order_by(F('category').desc() if order == 'desc' else F('category').asc())
+        elif sort_by == 'date':
+            queryset = queryset.order_by(F('date').desc() if order == 'desc' else F('date').asc())
+
 
         return super().get_context_data(
             form=form,
