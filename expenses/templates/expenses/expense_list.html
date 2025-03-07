@@ -5,9 +5,17 @@
 <a href="{% url 'expenses:expense-create' %}">add</a>
 
 <form method="get" action="">
-  {{form.as_p}}
-  <button type="submit">search</button>
-</form>
+	<label for="id_name">Name:</label>
+	{{ form.name }}
+  
+	<label for="id_date_from">Date from:</label>
+	{{ form.date_from }}
+  
+	<label for="id_date_to">Date to:</label>
+	{{ form.date_to }}
+  
+	<button type="submit">Search</button>
+  </form>
 <br>
 <table border="1">
 	<caption>Expenses</caption>
@@ -29,7 +37,7 @@
 		<td>{{ obj.category|default:"-" }}</td>
 		<td>{{ obj.name|default:"-" }}</td>
 		<td>{{ obj.amount|floatformat:2 }}</td>
-		<td>{{obj.date}}</td>
+		<td>{{ obj.date|date:"d-m-Y" }}</td>
 		<td>
 		  <a href="{% url 'expenses:expense-edit' obj.id %}">edit</a>
 		  <a href="{% url 'expenses:expense-delete' obj.id %}">delete</a>

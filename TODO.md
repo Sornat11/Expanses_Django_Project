@@ -25,3 +25,4 @@
    2. Create patch using git with filename in format `firstName-lastName.patch`.
    3. Make sure patch contains only source code you have added/changed.
    4. Send us only patch file.
+
