@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from .forms import ExpenseSearchForm
 from .models import Expense, Category
 from .reports import summary_per_category
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Count
 
 class ExpenseListView(ListView):
     model = Expense
@@ -62,3 +62,5 @@ class CategoryListView(ListView):
     model = Category
     paginate_by = 5
 
+    def get_queryset(self):
+        return Category.objects.annotate(expenses_count=Count('expense'))

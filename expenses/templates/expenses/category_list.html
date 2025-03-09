@@ -12,6 +12,7 @@
     <thead>
       <tr>
         <th scope="col">Category Name</th>
+        <th scope="col">Number of Expenses</th> <!-- Nowa kolumna -->
         <th scope="col">Actions</th>
       </tr>
     </thead>
@@ -19,6 +20,7 @@
       {% for obj in object_list %}
       <tr>
         <td>{{ obj.name }}</td>
+        <td>{{ obj.expenses_count }}</td> <!-- Ilość wydatków -->
         <td>
           <a href="{% url 'expenses:category-delete' obj.id %}" class="btn btn-danger btn-sm">Delete</a>
         </td>
