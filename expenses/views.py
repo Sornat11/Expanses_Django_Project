@@ -31,9 +31,9 @@ class ExpenseListView(ListView):
             if categories:
                 queryset = queryset.filter(category__in=categories)
         
-        # Sorting logic
-        sort_by = self.request.GET.get('sort_by', 'date')  # Default sort by 'date'
-        order = self.request.GET.get('order', 'asc')  # Default order 'asc'
+        
+        sort_by = self.request.GET.get('sort_by', 'date')  
+        order = self.request.GET.get('order', 'asc')  
 
         if sort_by == 'category':
             queryset = queryset.order_by(F('category').desc() if order == 'desc' else F('category').asc())
@@ -42,11 +42,20 @@ class ExpenseListView(ListView):
 
         total_spent = queryset.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
 
+        year_month_summary = (
+            queryset
+            .annotate(year=F('date__year'), month=F('date__month'))
+            .values('year', 'month')
+            .annotate(total_amount=Sum('amount'))
+            .order_by('-year', '-month')
+        )
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
             total_spent=total_spent,
+            summary_per_year_month=year_month_summary,
             **kwargs)
 
 class CategoryListView(ListView):
