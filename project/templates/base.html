@@ -1,13 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block meta_title %}Expenses app{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   </head>
   <body>
-	<a href="{% url 'expenses:expense-list' %}">Expenses</a> | 
-	<a href="{% url 'expenses:category-list' %}">Categories</a> | 
-	<hr>
-    {% block content %}{% endblock %}
+    <!-- Navbar (pasek nawigacyjny) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'expenses:expense-list' %}">Expenses App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'expenses:expense-list' %}">Expenses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'expenses:category-list' %}">Categories</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Container fluid dla pełnej szerokości -->
+    <div class="container-fluid mt-4">
+      <hr>
+
+      <!-- Main content -->
+      {% block content %}
+      {% endblock %}
+
+    </div>
   </body>
 </html>

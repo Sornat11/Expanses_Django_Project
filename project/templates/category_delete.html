@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Overlay to darken the background -->
+<div class="overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 9999;"></div>
+
+<div class="container mt-5" style="position: relative; z-index: 10000;">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="mb-0 text-dark" style="font-size: 2rem; font-weight: bold;">Confirmation of Category Deletion</h2>
+    </div>
+    <div class="card-body">
+      <p class="alert alert-warning">Are you sure you want to delete this category?</p>
+
+      <!-- Display category details -->
+      <div class="mb-3">
+        <strong>Category Name:</strong> {{ object.name }}
+      </div>
+
+      <!-- Confirmation form for deletion -->
+      <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'expenses:category-list' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
