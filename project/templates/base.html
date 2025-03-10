@@ -10,7 +10,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   </head>
   <body>
-    <!-- Navbar (pasek nawigacyjny) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'expenses:expense-list' %}">Expenses App</a>
@@ -30,11 +29,9 @@
       </div>
     </nav>
 
-    <!-- Container fluid dla pełnej szerokości -->
     <div class="container-fluid mt-4">
       <hr>
 
-      <!-- Main content -->
       {% block content %}
       {% endblock %}
 

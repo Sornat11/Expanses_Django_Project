@@ -58,6 +58,7 @@ class ExpenseListView(ListView):
 
 class CategoryListView(ListView):
     model = Category
+    template_name = 'categories/category_list.html'
 
     def get_queryset(self):
         return get_categories_with_expense_count()

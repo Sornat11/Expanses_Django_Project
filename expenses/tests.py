@@ -1,5 +1,5 @@
 import datetime
-from django.test import TestCase
+from django.test import TestCase, Client
 from expenses.models import Category, Expense
 from .forms import ExpenseSearchForm
 from django.urls import reverse
@@ -189,4 +189,68 @@ class CategoryListViewTest(TestCase):
 
         self.assertEqual(food_category.expenses_count, 1)
         self.assertEqual(travel_category.expenses_count, 1)
+
+class GenericViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.category = Category.objects.create(name="Food")
+        self.expense = Expense.objects.create(
+            name="Dinner",
+            amount=50,
+            category=self.category,
+            date="2024-01-01"
+        )
+
+    def test_category_create_view_get(self):
+        response = self.client.get(reverse('expenses:category-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'categories/category_create.html')
+
+    def test_category_create_view_post(self):
+        response = self.client.post(reverse('expenses:category-create'), {'name': 'Travel'})
+        self.assertEqual(response.status_code, 302) 
+        self.assertTrue(Category.objects.filter(name='Travel').exists())
+        self.assertRedirects(response, reverse('expenses:category-list'))
+
+    def test_category_update_view_post(self):
+        response = self.client.post(
+            reverse('expenses:category-edit', kwargs={'pk': self.category.pk}),
+            {'name': 'Updated Food'}
+        )
+        self.assertEqual(response.status_code, 302) 
+        self.category.refresh_from_db()
+        self.assertEqual(self.category.name, 'Updated Food')
+        self.assertRedirects(response, reverse('expenses:category-list'))
+
+    def test_expense_delete_view_post(self):
+        response = self.client.post(reverse('expenses:expense-delete', kwargs={'pk': self.expense.pk}))
+        self.assertEqual(response.status_code, 302)  
+        self.assertFalse(Expense.objects.filter(pk=self.expense.pk).exists())
+        self.assertRedirects(response, reverse('expenses:expense-list'))
+
+class ExpenseListPaginationTest(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name="Food")
+        # Utwórz 7 wydatków (paginate_by = 5, więc będzie 2 strony)
+        for i in range(7):
+            Expense.objects.create(
+                name=f"Expense {i}",
+                amount=10,
+                category=self.category,
+                date="2024-01-01"
+            )
+
+    def test_pagination_first_page(self):
+        # Test pierwszej strony (powinno być 5 wydatków)
+        response = self.client.get(reverse('expenses:expense-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 5)
+        self.assertTrue(response.context['page_obj'].has_next())  # Czy jest kolejna strona?
+
+    def test_pagination_second_page(self):
+        # Test drugiej strony (powinny być 2 wydatki)
+        response = self.client.get(reverse('expenses:expense-list'), {'page': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertFalse(response.context['page_obj'].has_next())  # Nie ma kolejnej strony
 
