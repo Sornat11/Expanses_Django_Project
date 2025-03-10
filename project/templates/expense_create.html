@@ -19,7 +19,8 @@
           <!-- Category -->
           <div class="mb-3">
             <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
-            <select class="form-control" id="{{ form.category.id_for_label }}" name="{{ form.category.name }}">
+            <select class="form-control" id="{{ form.category.id_for_label }}" name="{{ form.category.name }}" required>
+              <option value="" selected disabled>Choose a category</option>
               {% for category in form.category.field.queryset %}
                 <option value="{{ category.id }}" {% if category.id == form.category.value %} selected {% endif %}>{{ category.name }}</option>
               {% endfor %}

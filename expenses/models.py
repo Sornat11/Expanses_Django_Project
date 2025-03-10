@@ -24,4 +24,4 @@ class Expense(models.Model):
     date = models.DateField(default=datetime.date.today, db_index=True)
 
     def __str__(self):
-        return f'{self.date} {self.name} {self.amount}'
+        return f'{self.date} {self.name} {self.amount:.2f}'

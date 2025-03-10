@@ -35,7 +35,7 @@
           <!-- Date -->
           <div class="mb-3">
             <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
-            <input type="date" class="form-control" id="{{ form.date.id_for_label }}" name="{{ form.date.name }}" value="{{ form.date.value }}" required>
+            <input type="date" class="form-control" id="{{ form.date.id_for_label }}" name="{{ form.date.name }}" value="{{ form.date.value|date:'Y-m-d' }}" required>
           </div>
 
           <!-- Submit and Cancel buttons -->
