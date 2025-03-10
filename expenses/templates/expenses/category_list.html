@@ -22,6 +22,7 @@
         <td>{{ obj.name }}</td>
         <td>{{ obj.expenses_count }}</td> <!-- Ilość wydatków -->
         <td>
+          <a href="{% url 'expenses:category-edit' obj.id %}" class="btn btn-warning btn-sm">Edit</a>
           <a href="{% url 'expenses:category-delete' obj.id %}" class="btn btn-danger btn-sm">Delete</a>
         </td>
       </tr>

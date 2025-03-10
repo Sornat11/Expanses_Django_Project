@@ -2,8 +2,8 @@ from django.views.generic.list import ListView
 
 from .forms import ExpenseSearchForm
 from .models import Expense, Category
-from .reports import summary_per_category
-from django.db.models import F, Sum, Count
+from .reports import summary_per_category, summary_per_year_month, total_spent, get_categories_with_expense_count
+from django.db.models import F
 
 class ExpenseListView(ListView):
     model = Expense
@@ -18,6 +18,8 @@ class ExpenseListView(ListView):
             date_from = form.cleaned_data.get('date_from')
             date_to = form.cleaned_data.get('date_to')
             categories = form.cleaned_data.get('category')
+            sort_by = form.cleaned_data.get('sort_by') or 'date'  # Domyślna wartość
+            order = form.cleaned_data.get('order') or 'asc'
 
             if name:
                 queryset = queryset.filter(name__icontains=name)
@@ -31,36 +33,31 @@ class ExpenseListView(ListView):
             if categories:
                 queryset = queryset.filter(category__in=categories)
         
-        
-        sort_by = self.request.GET.get('sort_by', 'date')  
-        order = self.request.GET.get('order', 'asc')  
+
 
         if sort_by == 'category':
             queryset = queryset.order_by(F('category').desc() if order == 'desc' else F('category').asc())
         elif sort_by == 'date':
             queryset = queryset.order_by(F('date').desc() if order == 'desc' else F('date').asc())
 
-        total_spent = queryset.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
-
-        year_month_summary = (
-            queryset
-            .annotate(year=F('date__year'), month=F('date__month'))
-            .values('year', 'month')
-            .annotate(total_amount=Sum('amount'))
-            .order_by('-year', '-month')
-        )
+        total = total_spent(queryset)
+        category_summary = summary_per_category(queryset)
+        year_month_summary = summary_per_year_month(queryset)
 
         return super().get_context_data(
             form=form,
             object_list=queryset,
-            summary_per_category=summary_per_category(queryset),
-            total_spent=total_spent,
+            total_spent=total,
+            summary_per_category=category_summary,
             summary_per_year_month=year_month_summary,
-            **kwargs)
+            sort_by=sort_by,  
+            order=order,
+            **kwargs
+        )
+
 
 class CategoryListView(ListView):
     model = Category
-    paginate_by = 5
 
     def get_queryset(self):
-        return Category.objects.annotate(expenses_count=Count('expense'))
+        return get_categories_with_expense_count()

@@ -13,7 +13,7 @@ urlpatterns = [
             model=Expense,
             fields='__all__',
             success_url=reverse_lazy('expenses:expense-list'),
-            template_name='expense_update.html'
+            template_name='expense_create.html'
          ),
          name='expense-create'),
     path('expense/<int:pk>/edit/',
@@ -40,9 +40,17 @@ urlpatterns = [
             model=Category,
             fields='__all__',
             success_url=reverse_lazy('expenses:category-list'),
-            template_name='generic_update.html'
+            template_name='category_create.html'
          ),
          name='category-create'),
+    path('category/<int:pk>/edit/',
+         UpdateView.as_view(
+            model=Category,
+            fields=['name'],
+            success_url=reverse_lazy('expenses:category-list'),
+            template_name='category_update.html'
+         ),
+         name='category-edit'),         
     path('category/<int:pk>/delete/',
          DeleteView.as_view(
             model=Category,
