@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container mt-4">
     <div class="row">
         <!-- Form section -->
         <div class="col-md-3 mb-4">
-            <h2 class="mb-4 text-dark" style="font-size: 2.5rem; font-weight: bold;">Expenses</h2> 
+            <h2 class="mb-4 text-dark" style="font-size: 2.5rem; font-weight: bold;">Expenses</h2>
 
-            <a href="{% url 'expenses:expense-create' %}" class="btn btn-primary mb-3">Add Expense</a>
+            <a href="{% url 'expenses:expense-create' %}" class="btn btn-primary mb-3 w-100">Add Expense</a>
 
-            <form method="get" action="">
+            <form method="get" action="" class="bg-light p-4 rounded shadow-sm">
                 <div class="mb-3">
                     <label for="id_name" class="form-label">Name:</label>
                     <input type="text" name="name" id="id_name" class="form-control" value="{{ form.name.value|default:'' }}">
@@ -49,19 +48,19 @@
                         <option value="desc" {% if form.order.value == 'desc' %}selected{% endif %}>Descending</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-success">Search</button>
+                <button type="submit" class="btn btn-success w-100">Search</button>
             </form>
         </div>
 
         <!-- Expenses table and summaries -->
         <div class="col-md-9">
-            <div class="bg-light p-3 mb-4 rounded">
+            <div class="bg-light p-3 mb-4 rounded shadow-sm">
                 <h3>Total Amount Spent: <strong>{{ total_spent|floatformat:2 }}</strong></h3>
             </div>
 
             <!-- Expenses Table -->
-            <table class="table table-striped table-bordered">
-                <thead>
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th>No.</th>
                         <th>Category</th>
@@ -96,12 +95,12 @@
 
             <hr>
 
-            <!-- Summary per Category -->
             <div class="row">
+                <!-- Summary per category -->
                 <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Summary per category</h5>
-                    <table class="table table-striped table-bordered">
-                        <thead>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead class="table-dark">
                             <tr>
                                 <th>Category</th>
                                 <th>Total Amount</th>
@@ -121,12 +120,12 @@
                         </tbody>
                     </table>
                 </div>
-
+            
                 <!-- Summary per Year and Month -->
                 <div class="col-md-6 mb-4">
                     <h5 class="mb-3">Summary per Year and Month</h5>
-                    <table class="table table-striped table-bordered">
-                        <thead>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead class="table-dark">
                             <tr>
                                 <th>Year</th>
                                 <th>Month</th>
@@ -152,5 +151,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

@@ -60,10 +60,10 @@ class ExpenseModelTest(TestCase):
         self.assertIsNone(expense.category)
         self.assertEqual(expense.name, "No category expense")
 
+
 class ExpenseSearchFormTest(TestCase):
 
     def setUp(self):
-        # Tworzymy jedną kategorię testową
         self.category1 = Category.objects.create(name="Groceries")
         self.category2 = Category.objects.create(name="Transport")
 
@@ -81,7 +81,6 @@ class ExpenseSearchFormTest(TestCase):
         self.assertEqual(form.cleaned_data['name'], 'Lunch')
 
     def test_form_without_dates(self):
-        # Formularz powinien być poprawny nawet bez dat
         form_data = {
             'name': 'Lunch',
             'category': [self.category1.id],
@@ -92,7 +91,6 @@ class ExpenseSearchFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_invalid_date_range(self):
-        # date_from > date_to, formularz nie powinien być poprawny
         form_data = {
             'date_from': '2024-03-01',
             'date_to': '2024-02-01'
@@ -105,7 +103,6 @@ class ExpenseSearchFormTest(TestCase):
         )
 
     def test_empty_form_is_valid(self):
-        # Pusty formularz powinien być poprawny
         form = ExpenseSearchForm(data={})
         self.assertTrue(form.is_valid())
 
@@ -115,7 +112,6 @@ class ExpenseSearchFormTest(TestCase):
         }
         form = ExpenseSearchForm(data=form_data)
         self.assertTrue(form.is_valid())
-        # Sprawdzamy, czy pola sort_by i order przyjmują wartości domyślne
         self.assertEqual(form.fields['sort_by'].initial, 'date')
         self.assertEqual(form.fields['order'].initial, 'asc')
 
@@ -126,12 +122,15 @@ class ExpenseListViewTest(TestCase):
     def setUpTestData(cls):
         cls.cat_food = Category.objects.create(name='Food')
         cls.cat_travel = Category.objects.create(name='Travel')
-        Expense.objects.create(name='Pizza', amount=50, date='2024-01-10', category=cls.cat_food)
-        Expense.objects.create(name='Burger', amount=30, date='2024-01-12', category=cls.cat_food)
-        Expense.objects.create(name='Flight', amount=300, date='2024-02-01', category=cls.cat_travel)
+        Expense.objects.create(name='Pizza', amount=50,
+                               date='2024-01-10', category=cls.cat_food)
+        Expense.objects.create(name='Burger', amount=30,
+                               date='2024-01-12', category=cls.cat_food)
+        Expense.objects.create(name='Flight', amount=300,
+                               date='2024-02-01', category=cls.cat_travel)
 
     def test_expense_list_view_status_code(self):
-        response = self.client.get(reverse('expenses:expense-list'))  # Używamy 'expense-list' zamiast 'expenses:list'
+        response = self.client.get(reverse('expenses:expense-list'))
         self.assertEqual(response.status_code, 200)
 
     def test_expense_list_view_context(self):
@@ -143,36 +142,41 @@ class ExpenseListViewTest(TestCase):
         self.assertIn('summary_per_year_month', response.context)
 
     def test_expense_list_filter_by_name(self):
-        response = self.client.get(reverse('expenses:expense-list'), {'name': 'Pizza'})
+        response = self.client.get(
+            reverse('expenses:expense-list'), {'name': 'Pizza'})
         expenses = response.context['object_list']
         self.assertEqual(len(expenses), 1)
         self.assertEqual(expenses[0].name, 'Pizza')
 
     def test_expense_list_filter_by_date_range(self):
-        response = self.client.get(reverse('expenses:expense-list'), {'date_from': '2024-01-01', 'date_to': '2024-01-31'})
+        response = self.client.get(reverse(
+            'expenses:expense-list'), {'date_from': '2024-01-01', 'date_to': '2024-01-31'})
         expenses = response.context['object_list']
-        self.assertEqual(len(expenses), 2)  # Pizza + Burger
+        self.assertEqual(len(expenses), 2)
 
     def test_expense_list_filter_by_category(self):
-        response = self.client.get(reverse('expenses:expense-list'), {'category': [self.cat_travel.id]})
+        response = self.client.get(
+            reverse('expenses:expense-list'), {'category': [self.cat_travel.id]})
         expenses = response.context['object_list']
         self.assertEqual(len(expenses), 1)
         self.assertEqual(expenses[0].name, 'Flight')
 
     def test_expense_list_sort_by_date_desc(self):
-        response = self.client.get(reverse('expenses:expense-list'), {'sort_by': 'date', 'order': 'desc'})
+        response = self.client.get(
+            reverse('expenses:expense-list'), {'sort_by': 'date', 'order': 'desc'})
         expenses = response.context['object_list']
-        self.assertEqual(expenses[0].name, 'Flight')  # Najnowszy
+        self.assertEqual(expenses[0].name, 'Flight')
 
     def test_expense_list_sort_by_category_asc(self):
-        response = self.client.get(reverse('expenses:expense-list'), {'sort_by': 'category', 'order': 'asc'})
+        response = self.client.get(
+            reverse('expenses:expense-list'), {'sort_by': 'category', 'order': 'asc'})
         expenses = response.context['object_list']
         self.assertEqual(expenses[0].category.name, 'Food')
 
 
 class CategoryListViewTest(TestCase):
     def setUp(self):
-    
+
         food = Category.objects.create(name='Food')
         travel = Category.objects.create(name='Travel')
 
@@ -182,13 +186,15 @@ class CategoryListViewTest(TestCase):
     def test_category_list_with_expense_count(self):
         response = self.client.get(reverse('expenses:category-list'))
         categories = response.context['object_list']
-        self.assertEqual(len(categories), 2)  
-        
+        self.assertEqual(len(categories), 2)
+
         food_category = next(cat for cat in categories if cat.name == 'Food')
-        travel_category = next(cat for cat in categories if cat.name == 'Travel')
+        travel_category = next(
+            cat for cat in categories if cat.name == 'Travel')
 
         self.assertEqual(food_category.expenses_count, 1)
         self.assertEqual(travel_category.expenses_count, 1)
+
 
 class GenericViewTests(TestCase):
     def setUp(self):
@@ -207,8 +213,9 @@ class GenericViewTests(TestCase):
         self.assertTemplateUsed(response, 'categories/category_create.html')
 
     def test_category_create_view_post(self):
-        response = self.client.post(reverse('expenses:category-create'), {'name': 'Travel'})
-        self.assertEqual(response.status_code, 302) 
+        response = self.client.post(
+            reverse('expenses:category-create'), {'name': 'Travel'})
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(Category.objects.filter(name='Travel').exists())
         self.assertRedirects(response, reverse('expenses:category-list'))
 
@@ -217,21 +224,22 @@ class GenericViewTests(TestCase):
             reverse('expenses:category-edit', kwargs={'pk': self.category.pk}),
             {'name': 'Updated Food'}
         )
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
         self.category.refresh_from_db()
         self.assertEqual(self.category.name, 'Updated Food')
         self.assertRedirects(response, reverse('expenses:category-list'))
 
     def test_expense_delete_view_post(self):
-        response = self.client.post(reverse('expenses:expense-delete', kwargs={'pk': self.expense.pk}))
-        self.assertEqual(response.status_code, 302)  
+        response = self.client.post(
+            reverse('expenses:expense-delete', kwargs={'pk': self.expense.pk}))
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(Expense.objects.filter(pk=self.expense.pk).exists())
         self.assertRedirects(response, reverse('expenses:expense-list'))
+
 
 class ExpenseListPaginationTest(TestCase):
     def setUp(self):
         self.category = Category.objects.create(name="Food")
-        # Utwórz 7 wydatków (paginate_by = 5, więc będzie 2 strony)
         for i in range(7):
             Expense.objects.create(
                 name=f"Expense {i}",
@@ -241,16 +249,14 @@ class ExpenseListPaginationTest(TestCase):
             )
 
     def test_pagination_first_page(self):
-        # Test pierwszej strony (powinno być 5 wydatków)
         response = self.client.get(reverse('expenses:expense-list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 5)
-        self.assertTrue(response.context['page_obj'].has_next())  # Czy jest kolejna strona?
+        self.assertTrue(response.context['page_obj'].has_next())
 
     def test_pagination_second_page(self):
-        # Test drugiej strony (powinny być 2 wydatki)
-        response = self.client.get(reverse('expenses:expense-list'), {'page': 2})
+
+        response = self.client.get(
+            reverse('expenses:expense-list'), {'page': 2})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 2)
-        self.assertFalse(response.context['page_obj'].has_next())  # Nie ma kolejnej strony
-

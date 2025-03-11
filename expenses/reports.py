@@ -16,6 +16,7 @@ def summary_per_category(queryset):
         .values_list('category_name', 's')
     ))
 
+
 def summary_per_year_month(queryset):
     return (
         queryset
@@ -25,11 +26,11 @@ def summary_per_year_month(queryset):
         .order_by('-year', '-month')
     )
 
+
 def total_spent(queryset):
     total = queryset.aggregate(total_amount=Sum('amount'))['total_amount']
     return total or 0
 
+
 def get_categories_with_expense_count():
     return Category.objects.annotate(expenses_count=Count('expense'))
-
-

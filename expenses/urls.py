@@ -10,25 +10,25 @@ urlpatterns = [
          name='expense-list'),
     path('expense/create/',
          CreateView.as_view(
-            model=Expense,
-            fields='__all__',
-            success_url=reverse_lazy('expenses:expense-list'),
-            template_name='expenses/expense_create.html'
+             model=Expense,
+             fields='__all__',
+             success_url=reverse_lazy('expenses:expense-list'),
+             template_name='expenses/expense_create.html'
          ),
          name='expense-create'),
     path('expense/<int:pk>/edit/',
          UpdateView.as_view(
-            model=Expense,
-            fields='__all__',
-            success_url=reverse_lazy('expenses:expense-list'),
-            template_name='expenses/expense_update.html'
+             model=Expense,
+             fields='__all__',
+             success_url=reverse_lazy('expenses:expense-list'),
+             template_name='expenses/expense_update.html'
          ),
          name='expense-edit'),
     path('expense/<int:pk>/delete/',
          DeleteView.as_view(
-            model=Expense,
-            success_url=reverse_lazy('expenses:expense-list'),
-            template_name='expenses/expense_delete.html'
+             model=Expense,
+             success_url=reverse_lazy('expenses:expense-list'),
+             template_name='expenses/expense_delete.html'
          ),
          name='expense-delete'),
 
@@ -37,25 +37,25 @@ urlpatterns = [
          name='category-list'),
     path('category/create/',
          CreateView.as_view(
-            model=Category,
-            fields='__all__',
-            success_url=reverse_lazy('expenses:category-list'),
-            template_name='categories/category_create.html'
+             model=Category,
+             fields='__all__',
+             success_url=reverse_lazy('expenses:category-list'),
+             template_name='categories/category_create.html'
          ),
          name='category-create'),
     path('category/<int:pk>/edit/',
          UpdateView.as_view(
-            model=Category,
-            fields=['name'],
-            success_url=reverse_lazy('expenses:category-list'),
-            template_name='categories/category_update.html'
+             model=Category,
+             fields=['name'],
+             success_url=reverse_lazy('expenses:category-list'),
+             template_name='categories/category_update.html'
          ),
-         name='category-edit'),         
+         name='category-edit'),
     path('category/<int:pk>/delete/',
          DeleteView.as_view(
-            model=Category,
-            success_url=reverse_lazy('expenses:category-list'),
-            template_name='categories/category_delete.html'
+             model=Category,
+             success_url=reverse_lazy('expenses:category-list'),
+             template_name='categories/category_delete.html'
          ),
          name='category-delete'),
 ]

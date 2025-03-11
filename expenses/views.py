@@ -5,6 +5,7 @@ from .models import Expense, Category
 from .reports import summary_per_category, summary_per_year_month, total_spent, get_categories_with_expense_count
 from django.db.models import F
 
+
 class ExpenseListView(ListView):
     model = Expense
     paginate_by = 5
@@ -18,12 +19,13 @@ class ExpenseListView(ListView):
             date_from = form.cleaned_data.get('date_from')
             date_to = form.cleaned_data.get('date_to')
             categories = form.cleaned_data.get('category')
-            sort_by = form.cleaned_data.get('sort_by') or 'date'  # Domyślna wartość
+            sort_by = form.cleaned_data.get(
+                'sort_by') or 'date' 
             order = form.cleaned_data.get('order') or 'asc'
 
             if name:
                 queryset = queryset.filter(name__icontains=name)
-        
+
             if date_from:
                 queryset = queryset.filter(date__gte=date_from)
 
@@ -32,13 +34,13 @@ class ExpenseListView(ListView):
 
             if categories:
                 queryset = queryset.filter(category__in=categories)
-        
-
 
         if sort_by == 'category':
-            queryset = queryset.order_by(F('category').desc() if order == 'desc' else F('category').asc())
+            queryset = queryset.order_by(
+                F('category').desc() if order == 'desc' else F('category').asc())
         elif sort_by == 'date':
-            queryset = queryset.order_by(F('date').desc() if order == 'desc' else F('date').asc())
+            queryset = queryset.order_by(
+                F('date').desc() if order == 'desc' else F('date').asc())
 
         total = total_spent(queryset)
         category_summary = summary_per_category(queryset)
@@ -50,7 +52,7 @@ class ExpenseListView(ListView):
             total_spent=total,
             summary_per_category=category_summary,
             summary_per_year_month=year_month_summary,
-            sort_by=sort_by,  
+            sort_by=sort_by,
             order=order,
             **kwargs
         )
